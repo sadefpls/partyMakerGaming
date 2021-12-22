@@ -2,8 +2,11 @@ import React, {useEffect, useState} from "react";
 import List from "@mui/material/List";
 import ListSubheader from "@mui/material/ListSubheader";
 import ListItem from "@mui/material/ListItem";
-import {Button, ButtonGroup} from "@mui/material";
+import {Button, ButtonGroup, SvgIcon} from "@mui/material";
 import axios from "axios";
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+
+var fileDownload = require('js-file-download');
 
 function FileList(props) {
     let [partyFiles, setPartyFiles] = useState([]);
@@ -33,27 +36,40 @@ function FileList(props) {
         let index = 0;
         let preparedPath = [];
         let splitPath = path.split("\\");
-        splitPath.map((parsedPath) => {
+        splitPath.forEach((parsedPath) => {
             preparedPath.push({index: index, preparedPath: parsedPath, fullPath: _getFullPath(splitPath, index)});
             index++;
         })
         return preparedPath;
     }
-    const _handleClick = (fullPath) => async (event) => {
-        console.log(fullPath);
-        // get the data from the api
+    const _getFolder = (fullPath) => async (event) => {
         const data = await axios.post('http://localhost:8080/files/list', {
             path: fullPath,
             headers: {"Access-Control-Allow-Origin": "*"}
         });
-        console.log(data.data);
         setPartyFiles(data.data);
     }
-
+    const _getFileName = (fullPath) => {
+        let splitPath = fullPath.split("\\");
+        return splitPath[splitPath.length - 1];
+    }
+    const _getFile = (fullPath) => (event) => {
+        console.log(fullPath);
+        let data = axios.post('http://localhost:8080/file/get', {
+            path: fullPath,
+            responseType: "blob",
+            headers: {"Access-Control-Allow-Origin": "*"}
+        }).then((response) => {
+            fileDownload(response.data, _getFileName(fullPath));
+        });
+    }
+    const _handleClick = (file) => async (event) => {
+        file.file ? await _getFile(file.path) : await _getFolder(file.path);
+    }
 
     return (<>
             {partyFiles.files !== undefined && (
-                <><ButtonGroup variant="contained">
+                <><ButtonGroup variant="contained" color={"warning"}>
                     {_getParsedPaths(partyFiles.queriedPath).map((path) => (
                         <Button style={{transform: "skew(30deg)"}} onClick={_handleClick(path.fullPath)}>
                             <div style={{transform: "skew(-30deg)"}}>{path.preparedPath}</div>
@@ -65,10 +81,16 @@ function FileList(props) {
                         subheader={<ListSubheader>Files</ListSubheader>}
                     >
                         {partyFiles.files.map((file) => (
-                            <ListItem key={file.name}>
-                                <Button variant="outlined"
-                                        aria-label="outlined primary button group"
-                                        onClick={_handleClick(file.path)}>{file.name}</Button>
+                            <ListItem
+                                style={{border: "1px solid black", display: "flex", justifyContent: "space-between"}}
+                                key={file.name}>
+                                <Button variant="contained"
+                                        aria-label="contained main button group"
+                                        color={file.file ? "info" : "warning"}
+                                        onClick={!file.file ? _handleClick(file) : () => {
+                                        }}>{file.name}</Button>{file.file &&
+                            <Button onClick={_getFile(file.path)} variant="contained" aria-label="contained main button group"><SvgIcon
+                                component={FileDownloadOutlinedIcon}/></Button>}
                             </ListItem>
                         ))}
                     </List></>)}< />
