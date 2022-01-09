@@ -6,7 +6,7 @@ import FileList from "./components/fileList";
 
 ReactDOM.render(
     <React.StrictMode>
-        <FileList files={[{text:"txtLol"}]}/>
+        <FileList/>
     </React.StrictMode>,
     document.getElementById('root')
 );

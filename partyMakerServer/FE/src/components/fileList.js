@@ -5,6 +5,7 @@ import {Button, ButtonGroup} from "@mui/material";
 import axios from "axios";
 import FileListItem from "./fileListItem";
 import PathUtils from "../Utils/PathUtils";
+import FileUtils from "../Utils/FileUtils";
 
 function FileList(props) {
 
@@ -27,7 +28,7 @@ function FileList(props) {
                     <ButtonGroup variant="contained" color={"warning"}>
                         {PathUtils.getParsedPaths(partyFiles.queriedPath).map((path) => (
                             <Button style={{transform: "skew(30deg)"}}
-                                    onClick={PathUtils.getFolder(path.fullPath, setPartyFiles)}>
+                                    onClick={FileUtils.getFolder(path.fullPath, setPartyFiles)}>
                                 <div style={{transform: "skew(-30deg)"}}>{path.preparedPath}</div>
                             </Button>
                         ))}
