@@ -1,19 +1,17 @@
 package party.maker.abl;
 
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import party.maker.dto.GetFileDtoOut;
-import party.maker.dto.ListFilesDtoOut;
 import party.maker.dto.PartyFile;
+import party.maker.dto.pathDtoOut;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +19,11 @@ import java.util.Objects;
 
 @Component
 public class FileRequestAbl {
-    String defaultPath;
 
-    public ListFilesDtoOut listFiles(String path) {
+    public pathDtoOut listFiles(String path) {
         File dir = path != null ? new File(path) : new File(new FileSystemResource("").getFile().getAbsolutePath());
         List<PartyFile> files = dir.listFiles() != null ? convertFiles(Objects.requireNonNull(dir.listFiles())) : new ArrayList<>();
-        return new ListFilesDtoOut(dir.getPath(), files);
+        return new pathDtoOut(dir.getPath(), files);
     }
 
     private List<PartyFile> convertFiles(File[] files) {
@@ -37,27 +34,21 @@ public class FileRequestAbl {
         return convertedFiles;
     }
 
-    public GetFileDtoOut getFile(String path) {
-        try {
-            Path requestPath = Paths.get(path);
-            byte[] payload = Files.readAllBytes(requestPath);
-            return new GetFileDtoOut(FilenameUtils.getExtension(path), requestPath.getFileName().toString(), payload);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public ResponseEntity<InputStreamResource> getFile(String path) throws IOException {
+        ResponseEntity<InputStreamResource> respEntity = null;
+
+        byte[] reportBytes = null;
+        File result = new File(path);
+
+        if (result.exists()) {
+            InputStream inputStream = new FileInputStream(path);
+            return ResponseEntity.ok().body(new InputStreamResource(inputStream));
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 
-    public ResponseEntity<ByteArrayResource> getFileFucked(String path) {
-        try {
-            Path requestPath = Paths.get(path);
-            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(requestPath));
-            return ResponseEntity.ok().body(resource);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ListFilesDtoOut renameFile(String newName, String path) {
+    public pathDtoOut renameFile(String newName, String path) {
         try {
             newName = newName.replaceAll("\"", "");
             String newFullName = getPath(path) + newName;
@@ -78,7 +69,7 @@ public class FileRequestAbl {
         return newFullName += "\\";
     }
 
-    public ListFilesDtoOut deleteFile(String path) {
+    public pathDtoOut deleteFile(String path) {
         File file = new File(path);
         file.delete();
         return listFiles(getPath(path));

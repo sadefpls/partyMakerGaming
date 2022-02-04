@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from "react";
 import List from "@mui/material/List";
-import ListSubheader from "@mui/material/ListSubheader";
 import {Button, ButtonGroup} from "@mui/material";
 import axios from "axios";
 import FileListItem from "./fileListItem";
 import PathUtils from "../Utils/PathUtils";
 import FileUtils from "../Utils/FileUtils";
 
-function FileList(props) {
+function FileList() {
 
     let [partyFiles, setPartyFiles] = useState([]);
 
@@ -35,7 +34,6 @@ function FileList(props) {
                     </ButtonGroup>
                     <List
                         sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}
-                        subheader={<ListSubheader>Files</ListSubheader>}
                     >
                         {partyFiles.files.map((file) => (
                             <FileListItem file={file} setPartyFiles={setPartyFiles}/>

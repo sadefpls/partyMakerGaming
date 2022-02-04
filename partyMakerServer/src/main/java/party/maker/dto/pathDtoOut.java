@@ -2,11 +2,11 @@ package party.maker.dto;
 
 import java.util.List;
 
-public class ListFilesDtoOut {
+public class pathDtoOut {
     String queriedPath;
     List<PartyFile> files;
 
-    public ListFilesDtoOut(String queriedPath, List<PartyFile> files) {
+    public pathDtoOut(String queriedPath, List<PartyFile> files) {
         this.queriedPath = queriedPath;
         this.files = files;
     }
