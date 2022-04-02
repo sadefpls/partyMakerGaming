@@ -12,7 +12,6 @@ const playAudio = (fullPath) => async () => {
             audio.load();
             audio.crossOrigin = 'anonymous';
             audio.play().then(() => {
-                console.log("playing")
             }).catch((e) => console.log(e));
         }
     };
@@ -67,7 +66,20 @@ const renameFile = (file, setPartyFiles) => async () => {
     });
     setPartyFiles(data.data);
 }
-
+const saveFile = (newFile, path) => {
+    let xhr = new XMLHttpRequest();
+    let url = 'http://localhost:8080/file/upload';
+    xhr.responseType = 'json';
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    let file = new FormData();
+    file.append("path", path);
+    file.append("file", newFile);
+    xhr.send(file);
+}
+const openSetAsVoiceLineModal = (setOpen) => () => async () => {
+    setOpen(true);
+}
 const deleteFile = (file, setPartyFiles) => async () => {
     const data = await axios.post('http://localhost:8080/file/delete', {
         path: file.path,
@@ -75,4 +87,13 @@ const deleteFile = (file, setPartyFiles) => async () => {
     });
     setPartyFiles(data.data);
 }
-export default {playAudio, getFile, getFolder, handleClick, renameFile, deleteFile}
+export default {
+    playAudio,
+    getFile,
+    getFolder,
+    handleClick,
+    renameFile,
+    deleteFile,
+    saveFile,
+    setAsVoiceLine: openSetAsVoiceLineModal
+}

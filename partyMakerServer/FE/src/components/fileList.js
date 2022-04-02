@@ -5,6 +5,7 @@ import axios from "axios";
 import FileListItem from "./fileListItem";
 import PathUtils from "../Utils/PathUtils";
 import FileUtils from "../Utils/FileUtils";
+import UploadDialog from "./uploadDialog";
 
 function FileList() {
 
@@ -21,24 +22,32 @@ function FileList() {
             .catch(console.error);
     }, [])
 
-    return (<>
+    return (<div style={{width: "60%", padding: "5%", justifyContent: "center"}}>
             {partyFiles.files !== undefined && (
-                <>
-                    <ButtonGroup variant="contained" color={"warning"}>
+                <div style={{width: "100%", border: "solid grey 1px", padding: "1em", borderRadius: "30px"}}>
+                    <ButtonGroup fullWidth={true} sx={{
+                        display: 'flex',
+                        justifyContent: "auto",
+                        alignItems: 'center'
+                    }} variant="contained" color={"warning"}>
                         {PathUtils.getParsedPaths(partyFiles.queriedPath).map((path) => (
-                            <Button style={{transform: "skew(30deg)"}}
-                                    onClick={FileUtils.getFolder(path.fullPath, setPartyFiles)}>
-                                <div style={{transform: "skew(-30deg)"}}>{path.preparedPath}</div>
+                            <Button
+                                onClick={FileUtils.getFolder(path.fullPath, setPartyFiles)}>
+                                <div>{path.preparedPath}</div>
                             </Button>
                         ))}
                     </ButtonGroup>
                     <List
-                        sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}
+                        sx={{width: '100%', bgcolor: 'background.paper'}}
                     >
                         {partyFiles.files.map((file) => (
-                            <FileListItem file={file} setPartyFiles={setPartyFiles}/>
+                            <FileListItem file={file}
+                                          setPartyFiles={setPartyFiles}/>
                         ))}
-                    </List></>)}< />
+                    </List>
+                    <UploadDialog style={{width: "100%"}} path={partyFiles.queriedPath}/>
+                </div>)}
+        </div>
     );
 }
 

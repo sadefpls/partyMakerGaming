@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import party.maker.abl.FileRequestAbl;
 import party.maker.dto.ListFilesDtoIn;
 import party.maker.dto.RenameFileDtoIn;
+import party.maker.dto.UploadFileDtoIn;
 import party.maker.dto.pathDtoOut;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,5 +41,10 @@ public class FileRequestController {
     @RequestMapping(value = "file/delete", method = POST)
     public pathDtoOut deleteFile(@RequestBody(required = false) ListFilesDtoIn dtoIn) {
         return fileRequestAbl.deleteFile(dtoIn.getPath());
+    }
+
+    @RequestMapping(value = "file/upload", method = POST)
+    public pathDtoOut uploadFile(@ModelAttribute UploadFileDtoIn dtoIn) {
+        return fileRequestAbl.uploadFile(dtoIn);
     }
 }

@@ -4,7 +4,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export default function EditButton(props) {
     const [open, setOpen] = React.useState(false);
-    const [renameOpen, setRenameOpen] = React.useState(false);
 
 
     const handleToggle = () => {

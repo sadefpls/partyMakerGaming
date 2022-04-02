@@ -6,12 +6,13 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import party.maker.dto.PartyFile;
+import party.maker.dto.UploadFileDtoIn;
 import party.maker.dto.pathDtoOut;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,5 +74,16 @@ public class FileRequestAbl {
         File file = new File(path);
         file.delete();
         return listFiles(getPath(path));
+    }
+
+    public pathDtoOut uploadFile(UploadFileDtoIn dtoIn) {
+        Path filepath = Paths.get(dtoIn.getPath(), dtoIn.getFile().getOriginalFilename());
+
+        try (OutputStream os = Files.newOutputStream(filepath)) {
+            os.write(dtoIn.getFile().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return listFiles(getPath(dtoIn.getPath()));
     }
 }
